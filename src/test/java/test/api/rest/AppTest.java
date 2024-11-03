@@ -3,13 +3,39 @@
  */
 package test.api.rest;
 
+import io.restassured.http.ContentType;
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class AppTest {
-    @Test public void testAppHasAGreeting() {
-        assertThat(1, is (1));
+    @Test
+    public void testlistametadados() {
+        when().
+            get("https://reqres.in/api/users?page=2").
+
+        then().
+             statusCode(HttpStatus.SC_OK)
+                .body("page", is(2))
+                .body("data[0].id", is(7) )
+                .body("data[0].last_name", is( "Lawson"))
+                .body("data[1].last_name", is("Ferguson"))
+                .body("data", is (notNullValue()));
+    }
+
+    @Test
+    public void testcriarusuario (){
+        given().log().all().
+                contentType(ContentType.JSON).
+          body("{\"name\": \"cholesk\",\"job\": \"dev\"}").
+        when().
+           post("https://reqres.in/api/users").
+        then().
+            statusCode(HttpStatus.SC_CREATED)
+                .body("name", is("cholesk"));
     }
 }
